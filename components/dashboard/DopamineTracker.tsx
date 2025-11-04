@@ -28,108 +28,132 @@ export default function DopamineTracker() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
     >
       {/* Current Streak */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <Flame className="text-red-600 h-6 w-6" />
+      <motion.div
+        whileHover={{ y: -4, scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className="relative overflow-hidden shadow-md hover:shadow-xl transition-shadow border-2">
+          <div className="absolute inset-0 bg-gradient-to-br from-destructive/10 via-transparent to-transparent" />
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-destructive to-destructive/80 rounded-xl shadow-lg">
+                <Flame className="text-destructive-foreground h-6 w-6" />
+              </div>
             </div>
-          </div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            Current Streak
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-foreground">
-              {stats.currentStreak}
-            </span>
-            <span className="text-lg font-medium text-muted-foreground">days</span>
-          </div>
-          {stats.longestStreak > stats.currentStreak && (
-            <p className="text-xs text-muted-foreground mt-2">
-              🏆 Best: {stats.longestStreak} days
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Current Streak
             </p>
-          )}
-        </CardContent>
-      </Card>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-5xl font-bold bg-gradient-to-br from-destructive to-destructive/70 bg-clip-text text-transparent">
+                {stats.currentStreak}
+              </span>
+              <span className="text-xl font-semibold text-muted-foreground">days</span>
+            </div>
+            {stats.longestStreak > stats.currentStreak && (
+              <p className="text-xs text-muted-foreground font-medium">
+                🏆 Best: {stats.longestStreak} days
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Total Focus Time */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Clock className="text-blue-600 h-6 w-6" />
+      <motion.div
+        whileHover={{ y: -4, scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className="relative overflow-hidden shadow-md hover:shadow-xl transition-shadow border-2">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg">
+                <Clock className="text-primary-foreground h-6 w-6" />
+              </div>
             </div>
-          </div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            Total Focus
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-foreground">
-              {totalHours}
-            </span>
-            <span className="text-lg font-medium text-muted-foreground">h</span>
-            {totalMinutes > 0 && (
-              <>
-                <span className="text-2xl font-bold text-foreground ml-1">
-                  {totalMinutes}
-                </span>
-                <span className="text-lg font-medium text-muted-foreground">m</span>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Total Focus
+            </p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent">
+                {totalHours}
+              </span>
+              <span className="text-xl font-semibold text-muted-foreground">h</span>
+              {totalMinutes > 0 && (
+                <>
+                  <span className="text-3xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent ml-1">
+                    {totalMinutes}
+                  </span>
+                  <span className="text-xl font-semibold text-muted-foreground">m</span>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Sessions Completed */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Target className="text-yellow-600 h-6 w-6" />
+      <motion.div
+        whileHover={{ y: -4, scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className="relative overflow-hidden shadow-md hover:shadow-xl transition-shadow border-2">
+          <div className="absolute inset-0 bg-gradient-to-br from-warning/10 via-transparent to-transparent" />
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-warning to-warning/80 rounded-xl shadow-lg">
+                <Target className="text-warning-foreground h-6 w-6" />
+              </div>
             </div>
-          </div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            Sessions
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-foreground">
-              {stats.sessionsCompleted}
-            </span>
-            <span className="text-lg font-medium text-muted-foreground">total</span>
-          </div>
-        </CardContent>
-      </Card>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Sessions
+            </p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-bold bg-gradient-to-br from-warning to-warning/70 bg-clip-text text-transparent">
+                {stats.sessionsCompleted}
+              </span>
+              <span className="text-xl font-semibold text-muted-foreground">total</span>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Average Focus Quality */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="text-green-600 h-6 w-6" />
+      <motion.div
+        whileHover={{ y: -4, scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className="relative overflow-hidden shadow-md hover:shadow-xl transition-shadow border-2">
+          <div className="absolute inset-0 bg-gradient-to-br from-success/10 via-transparent to-transparent" />
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-success to-success/80 rounded-xl shadow-lg">
+                <TrendingUp className="text-success-foreground h-6 w-6" />
+              </div>
             </div>
-          </div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            Avg Quality
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-foreground">
-              {stats.averageFocusQuality.toFixed(1)}
-            </span>
-            <span className="text-lg font-medium text-muted-foreground">/ 10</span>
-          </div>
-          <div className="mt-3 h-2 bg-secondary rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${(stats.averageFocusQuality / 10) * 100}%` }}
-              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-red-500 via-yellow-400 to-green-500"
-            />
-          </div>
-        </CardContent>
-      </Card>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Avg Quality
+            </p>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="text-5xl font-bold bg-gradient-to-br from-success to-success/70 bg-clip-text text-transparent">
+                {stats.averageFocusQuality.toFixed(1)}
+              </span>
+              <span className="text-xl font-semibold text-muted-foreground">/ 10</span>
+            </div>
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden shadow-inner">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${(stats.averageFocusQuality / 10) * 100}%` }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                className="h-full bg-gradient-to-r from-destructive via-warning to-success shadow-sm"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </motion.div>
   );
 }

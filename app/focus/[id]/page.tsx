@@ -88,24 +88,30 @@ export default function FocusModePage() {
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
-      {/* Breathing Background Animation */}
-      <div className="absolute inset-0 -z-10">
+      {/* Breathing Background Animation - Vibrant */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-background to-muted/20">
+        {/* Primary Blue Orb */}
         <motion.div
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.3, 1],
+            opacity: [0.4, 0.7, 0.4],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-[32rem] h-[32rem] bg-gradient-to-br from-primary/40 to-primary/20 rounded-full blur-3xl"
         />
+        {/* Accent Teal Orb */}
         <motion.div
           animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
+            scale: [1, 1.4, 1],
+            opacity: [0.3, 0.6, 0.3],
+            x: [0, -60, 0],
+            y: [0, 40, 0],
           }}
           transition={{
             duration: 10,
@@ -113,12 +119,15 @@ export default function FocusModePage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-[36rem] h-[36rem] bg-gradient-to-br from-accent/40 to-accent/20 rounded-full blur-3xl"
         />
+        {/* Secondary Purple Orb */}
         <motion.div
           animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.25, 0.45, 0.25],
+            scale: [1, 1.25, 1],
+            opacity: [0.35, 0.65, 0.35],
+            x: [0, 30, 0],
+            y: [0, -20, 0],
           }}
           transition={{
             duration: 12,
@@ -126,44 +135,58 @@ export default function FocusModePage() {
             ease: "easeInOut",
             delay: 2,
           }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/20 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-gradient-to-br from-secondary/40 to-secondary/20 rounded-full blur-3xl"
+        />
+        {/* Additional smaller orbs for depth */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
+          className="absolute top-3/4 left-1/3 w-64 h-64 bg-gradient-to-br from-success/30 to-success/10 rounded-full blur-2xl"
         />
       </div>
 
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10">
+      <div className="absolute top-0 left-0 right-0 p-8 flex items-center justify-between z-10">
         <motion.button
           whileHover={{ scale: 1.05, x: -5 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleExit}
-          className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-muted transition-colors"
+          className="flex items-center gap-2 px-5 py-3 bg-background/90 backdrop-blur-md border-2 rounded-xl hover:bg-muted/80 transition-all shadow-lg hover:shadow-xl"
         >
-          <ArrowLeft size={18} />
-          <span className="font-medium">Exit Focus</span>
+          <ArrowLeft size={20} />
+          <span className="font-semibold">Exit Focus</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileHover={{ scale: 1.15, rotate: 90 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleExit}
-          className="p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-muted transition-colors"
+          className="p-3 bg-background/90 backdrop-blur-md border-2 rounded-xl hover:bg-muted/80 transition-all shadow-lg hover:shadow-xl"
         >
-          <X size={20} />
+          <X size={22} />
         </motion.button>
       </div>
 
       {/* Task Info */}
-      <div className="absolute top-24 left-0 right-0 px-6 z-10">
+      <div className="absolute top-28 left-0 right-0 px-8 z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto text-center"
+          className="max-w-3xl mx-auto text-center"
         >
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+          <h1 className="text-4xl font-bold text-foreground mb-3 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
             {task.title}
           </h1>
           {task.description && (
-            <p className="text-muted-foreground">
+            <p className="text-lg text-muted-foreground font-medium">
               {task.description}
             </p>
           )}
