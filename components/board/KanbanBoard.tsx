@@ -171,40 +171,42 @@ export default function KanbanBoard() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-background via-background to-muted/10">
+    <div className="h-full flex flex-col bg-background">
       {/* Board Header */}
-      <div className="flex items-center justify-between px-8 py-8 bg-card/80 backdrop-blur-sm border-b-2 shadow-sm">
+      <div className="flex items-center justify-between px-8 py-6 bg-card border-b">
         <div>
-          <h1 className="text-4xl font-bold mb-2 tracking-tight bg-gradient-to-br from-primary via-secondary to-accent bg-clip-text text-transparent">
-            FlowBoard
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            ZenFocus AI
           </h1>
-          <p className="text-base text-muted-foreground font-medium">
-            Your AI-powered focus management system
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Good morning! You're on a roll.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             onClick={() => setIsSettingsOpen(true)}
-            className="gap-2 shadow-sm hover:shadow-md transition-shadow"
+            className="gap-2"
+            size="sm"
           >
-            <Settings className="h-5 w-5" />
-            <span className="font-semibold">Settings</span>
+            <Settings className="h-4 w-4" />
+            Settings
           </Button>
 
           <Button
             onClick={handleAddColumn}
-            className="gap-2 shadow-md hover:shadow-lg transition-shadow"
+            className="gap-2"
+            size="sm"
           >
-            <Plus className="h-5 w-5" />
-            <span className="font-semibold">Add Column</span>
+            <Plus className="h-4 w-4" />
+            Add Task
           </Button>
         </div>
       </div>
 
       {/* Dopamine Tracker */}
-      <div className="px-8 py-8">
+      <div className="px-8 py-6">
         <DopamineTracker />
       </div>
 
@@ -214,8 +216,8 @@ export default function KanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-10">
-          <div className="flex gap-6 h-full py-3">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8">
+          <div className="flex gap-5 h-full py-2">
             {columns.map((column) => (
               <Column
                 key={column.id}

@@ -1,10 +1,8 @@
 "use client";
 
 import { Column as ColumnType, Task } from "@/lib/types";
-import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import DraggableTaskCard from "./DraggableTaskCard";
-import { Button } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDroppable } from "@dnd-kit/core";
@@ -33,80 +31,54 @@ export default function Column({
   });
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col h-full min-w-[360px] max-w-[400px] bg-muted/60 rounded-xl p-5 border-2 shadow-sm"
+      className="flex flex-col h-full min-w-[320px] max-w-[360px] bg-card rounded-lg p-4 border"
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold">{column.title}</h2>
-          <Badge variant="secondary" className="rounded-full px-3 py-1 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <h2 className="text-base font-semibold text-foreground">{column.title}</h2>
+          <Badge variant="secondary" className="rounded-full h-5 px-2 text-xs">
             {tasks.length}
           </Badge>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => onAddTask(column.id)}
-          className="h-9 w-9 inline-flex items-center justify-center rounded-lg bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
+          className="p-1.5 hover:bg-muted rounded-md transition-colors"
         >
-          <Plus size={18} />
-        </motion.button>
+          <Plus className="h-4 w-4 text-muted-foreground" />
+        </button>
       </div>
 
       {/* Tasks Container */}
-      <ScrollArea className="flex-1 pr-3">
+      <ScrollArea className="flex-1 pr-2">
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-          <div className="space-y-4">
-            <AnimatePresence mode="popLayout">
-              {sortedTasks.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center h-56 border-2 border-dashed rounded-xl text-muted-foreground bg-background/30"
+          <div className="space-y-2.5">
+            {sortedTasks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg text-muted-foreground">
+                <p className="text-xs mb-1">No tasks yet</p>
+                <button
+                  onClick={() => onAddTask(column.id)}
+                  className="text-xs text-primary hover:underline font-medium"
                 >
-                  <p className="text-sm font-medium mb-3">No tasks yet</p>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => onAddTask(column.id)}
-                    className="text-sm text-primary hover:text-primary-hover font-semibold px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-                  >
-                    Add your first task
-                  </motion.button>
-                </motion.div>
-              ) : (
-                sortedTasks.map((task, index) => (
-                  <motion.div
-                    key={task.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      transition: { delay: index * 0.03 }
-                    }}
-                    exit={{ opacity: 0, x: -50 }}
-                  >
-                    <DraggableTaskCard
-                      task={task}
-                      onEdit={onEditTask}
-                      onDelete={onDeleteTask}
-                    />
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
+                  Add your first task
+                </button>
+              </div>
+            ) : (
+              sortedTasks.map((task) => (
+                <DraggableTaskCard
+                  key={task.id}
+                  task={task}
+                  onEdit={onEditTask}
+                  onDelete={onDeleteTask}
+                />
+              ))
+            )}
           </div>
         </SortableContext>
       </ScrollArea>
-    </motion.div>
+    </div>
   );
 }

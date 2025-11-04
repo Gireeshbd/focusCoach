@@ -1,15 +1,13 @@
 "use client";
 
 import { Task } from "@/lib/types";
-import { motion } from "framer-motion";
-import { GripVertical, Pencil, Trash2, Target, Sparkles, Play, Loader2, MoreVertical } from "lucide-react";
+import { GripVertical, MoreVertical, Play, Sparkles, Clock } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSettings } from "@/lib/localStorage";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface TaskCardProps {
