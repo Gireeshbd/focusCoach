@@ -86,17 +86,17 @@ export default function TaskCard({
         y: 0,
       }}
       exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2 }}
       className={isDragging ? "cursor-grabbing" : "cursor-grab"}
     >
-      <Card className="group relative hover:shadow-md transition-shadow">
+      <Card className="group relative hover:shadow-xl transition-all duration-300 border-2 shadow-md">
         {/* Drag Handle */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="absolute left-3 top-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
-                <GripVertical size={16} />
+              <div className="absolute left-4 top-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+                <GripVertical size={18} />
               </div>
             </TooltipTrigger>
             <TooltipContent side="left">
@@ -106,13 +106,13 @@ export default function TaskCard({
         </TooltipProvider>
 
         {/* Action Menu */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-4 right-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/80"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -133,23 +133,23 @@ export default function TaskCard({
           </DropdownMenu>
         </div>
 
-        <CardContent className="pt-6 pb-4 pl-10 pr-12">
+        <CardContent className="p-6 pt-7">
           {/* Title */}
-          <h3 className="font-semibold text-base mb-2 leading-tight">
+          <h3 className="font-bold text-lg mb-2 leading-snug pl-6 pr-8">
             {task.title}
           </h3>
 
           {/* Description */}
           {task.description && (
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed pl-6 pr-8">
               {task.description}
             </p>
           )}
 
           {/* Session Stats */}
           {completedSessions.length > 0 && (
-            <Badge variant="secondary" className="mb-3">
-              <Target className="mr-1 h-3 w-3" />
+            <Badge variant="secondary" className="mb-4 shadow-sm">
+              <Target className="mr-1.5 h-3 w-3" />
               {completedSessions.length} session{completedSessions.length !== 1 ? "s" : ""}
             </Badge>
           )}
@@ -158,7 +158,7 @@ export default function TaskCard({
           <Button
             variant={showAIPanel ? "default" : "outline"}
             size="sm"
-            className="w-full mb-3"
+            className="w-full mb-3 shadow-sm"
             onClick={handleAICoach}
             disabled={loadingAI}
           >
@@ -184,8 +184,8 @@ export default function TaskCard({
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <Card className="bg-muted/50 mb-3">
-                <CardContent className="p-3 text-xs leading-relaxed whitespace-pre-wrap">
+              <Card className="bg-gradient-to-br from-muted/80 to-muted/40 mb-3 border-2 shadow-sm">
+                <CardContent className="p-4 text-xs leading-relaxed whitespace-pre-wrap">
                   {aiSuggestion}
                 </CardContent>
               </Card>
@@ -193,9 +193,9 @@ export default function TaskCard({
           )}
         </CardContent>
 
-        <CardFooter className="pt-0 pb-4 px-6">
+        <CardFooter className="p-6 pt-0">
           <Button
-            className="w-full"
+            className="w-full shadow-md hover:shadow-lg transition-shadow"
             onClick={() => router.push(`/focus/${task.id}`)}
           >
             <Play className="mr-2 h-4 w-4" fill="currentColor" />

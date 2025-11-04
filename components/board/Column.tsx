@@ -39,44 +39,48 @@ export default function Column({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col h-full min-w-[340px] max-w-[380px] bg-muted/30 rounded-lg p-4 border"
+      className="flex flex-col h-full min-w-[360px] max-w-[400px] bg-muted/60 rounded-xl p-5 border-2 shadow-sm"
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">{column.title}</h2>
-          <Badge variant="secondary" className="rounded-full">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold">{column.title}</h2>
+          <Badge variant="secondary" className="rounded-full px-3 py-1 shadow-sm">
             {tasks.length}
           </Badge>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onAddTask(column.id)}
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="h-9 w-9 inline-flex items-center justify-center rounded-lg bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
         >
-          <Plus size={16} />
-        </button>
+          <Plus size={18} />
+        </motion.button>
       </div>
 
       {/* Tasks Container */}
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="flex-1 pr-3">
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {sortedTasks.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center h-48 border-2 border-dashed rounded-lg text-muted-foreground"
+                  className="flex flex-col items-center justify-center h-56 border-2 border-dashed rounded-xl text-muted-foreground bg-background/30"
                 >
-                  <p className="text-sm mb-2">No tasks yet</p>
-                  <button
+                  <p className="text-sm font-medium mb-3">No tasks yet</p>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => onAddTask(column.id)}
-                    className="text-xs text-primary hover:underline"
+                    className="text-sm text-primary hover:text-primary-hover font-semibold px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
                   >
                     Add your first task
-                  </button>
+                  </motion.button>
                 </motion.div>
               ) : (
                 sortedTasks.map((task, index) => (
