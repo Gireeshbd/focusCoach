@@ -1,19 +1,74 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { apiKey, task, type, history } = body;
+    // Authenticate user
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!apiKey) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get user profile with subscription info
+    const { data: profile } = await supabase
+      .from("users")
+      .select("subscription_tier, ai_requests_count, ai_requests_reset_at")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile) {
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+    }
+
+    // Check if AI requests need to be reset (monthly)
+    const resetDate = new Date(profile.ai_requests_reset_at);
+    const now = new Date();
+    const shouldReset = now.getMonth() !== resetDate.getMonth() || now.getFullYear() !== resetDate.getFullYear();
+
+    if (shouldReset) {
+      await supabase
+        .from("users")
+        .update({
+          ai_requests_count: 0,
+          ai_requests_reset_at: now.toISOString(),
+        })
+        .eq("id", user.id);
+      profile.ai_requests_count = 0;
+    }
+
+    // Rate limiting based on tier
+    const limits = {
+      free: 5,
+      pro: Infinity,
+      elite: Infinity,
+    };
+
+    const userLimit = limits[profile.subscription_tier];
+    if (profile.ai_requests_count >= userLimit) {
       return NextResponse.json(
-        { error: "OpenAI API key is required" },
-        { status: 400 }
+        {
+          error: `AI request limit reached. Upgrade to Pro for unlimited AI coaching!`,
+          limit: userLimit,
+          current: profile.ai_requests_count,
+        },
+        { status: 429 }
       );
     }
 
-    const openai = new OpenAI({ apiKey });
+    const body = await request.json();
+    const { task, type, history } = body;
+
+    // Use server-side API key (included in subscription)
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     let systemPrompt = "";
     let userPrompt = "";
@@ -58,7 +113,22 @@ export async function POST(request: NextRequest) {
 
     const response = completion.choices[0]?.message?.content || "";
 
-    return NextResponse.json({ response });
+    // Increment usage counter
+    await supabase
+      .from("users")
+      .update({
+        ai_requests_count: profile.ai_requests_count + 1,
+      })
+      .eq("id", user.id);
+
+    return NextResponse.json({
+      response,
+      usage: {
+        current: profile.ai_requests_count + 1,
+        limit: userLimit === Infinity ? "unlimited" : userLimit,
+        tier: profile.subscription_tier,
+      },
+    });
   } catch (error: any) {
     console.error("OpenAI API Error:", error);
     return NextResponse.json(
