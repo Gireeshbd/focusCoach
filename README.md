@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FlowBoard
+
+> An AI-powered Focus Management App inspired by neuroscience and the "1-90-0" deep work method.
+
+FlowBoard is not just a Kanban board — it's a **flow-state system** that helps you rewire your focus, eliminate distractions, and achieve deep work sessions. Each task card becomes a mini flow challenge.
+
+## Features
+
+### 🎯 Flow Kanban Board
+- **Dynamic Columns**: TODO, In Progress, Done (with ability to add custom columns)
+- **Beautiful Cards**: Each card includes title, description, notes, and an AI Focus Coach panel
+- **Smooth Animations**: Buttery drag-and-drop transitions powered by Framer Motion
+- **Minimal UI**: Built with Next.js 14 (App Router) and Tailwind CSS v3
+
+### 🧠 Focus Mode (1-90-0 System)
+- **Immersive Experience**: Full-screen view that hides UI clutter
+- **Smart Timer**: Defaults to 90 minutes (editable), with visual "flow energy" meter
+- **Breathing Animations**: Subtle background animations to maintain calm focus
+- **AI Reflection**: After each session, AI prompts reflection questions
+
+### 🤖 AI Flow Coach
+Uses OpenAI API to provide:
+- Task breakdown into "flow-optimized" chunks
+- Dopamine detox reminders
+- Motivational insights based on previous sessions
+- Auto-generated session summaries
+
+### 📊 Dopamine Detox Tracker
+Dashboard showing:
+- **Current Streak**: Consecutive days with focus sessions
+- **Total Focus Time**: Cumulative hours and minutes
+- **Sessions Completed**: Total number of completed sessions
+- **Average Focus Quality**: Visual feedback with energy meter
+
+### 🎨 Design & Motion
+- Clean, handwritten-meets-modern UI aesthetic
+- Breathing background animations during focus mode
+- Smooth card animations with Framer Motion
+- Color palette: Red (#ff3333), Yellow (#ffff00), Blue (#0066ff)
+
+## Tech Stack
+
+- Next.js 14+ (App Router)
+- TypeScript (strict mode)
+- Tailwind CSS v3
+- Framer Motion
+- OpenAI API
+- Local Storage
 
 ## Getting Started
 
-First, run the development server:
-
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Usage
 
-## Learn More
+### Creating Tasks
+1. Click "+" in any column
+2. Enter task details
+3. Click "Create Task"
 
-To learn more about Next.js, take a look at the following resources:
+### Focus Mode
+1. Click "Enter Focus Mode" on a task card
+2. Start the 90-minute timer
+3. Work in deep focus
+4. Complete reflection questions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### AI Features (Optional)
+Add your OpenAI API key in the AI Coach panel to enable:
+- Task breakdowns
+- Dopamine detox tips
+- Session summaries
+- Motivational insights
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+flowboard/
+├── app/              # Next.js pages and API routes
+├── components/       # React components
+│   ├── board/       # Kanban board components
+│   ├── focus/       # Focus mode components
+│   └── dashboard/   # Stats dashboard
+├── lib/             # Utilities and types
+└── public/          # Static assets
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License
+
+---
+
+**Built with ❤️ and deep focus**
