@@ -15,13 +15,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user profile with subscription info
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("users")
       .select("subscription_tier, ai_requests_count, ai_requests_reset_at")
       .eq("id", user.id)
       .single();
 
-    if (!profile) {
+    if (profileError || !profile) {
+      console.error("Profile fetch error:", profileError);
       return NextResponse.json({ error: "User profile not found" }, { status: 404 });
     }
 
@@ -30,15 +31,22 @@ export async function POST(request: NextRequest) {
     const now = new Date();
     const shouldReset = now.getMonth() !== resetDate.getMonth() || now.getFullYear() !== resetDate.getFullYear();
 
+    let currentCount = profile.ai_requests_count;
+
     if (shouldReset) {
-      await supabase
+      const { error: resetError } = await supabase
         .from("users")
         .update({
           ai_requests_count: 0,
           ai_requests_reset_at: now.toISOString(),
         })
         .eq("id", user.id);
-      profile.ai_requests_count = 0;
+
+      if (resetError) {
+        console.error("Reset error:", resetError);
+      } else {
+        currentCount = 0;
+      }
     }
 
     // Rate limiting based on tier
@@ -49,16 +57,43 @@ export async function POST(request: NextRequest) {
     };
 
     const userLimit = limits[profile.subscription_tier];
-    if (profile.ai_requests_count >= userLimit) {
+
+    // Check limit BEFORE incrementing
+    if (currentCount >= userLimit) {
       return NextResponse.json(
         {
           error: `AI request limit reached. Upgrade to Pro for unlimited AI coaching!`,
           limit: userLimit,
-          current: profile.ai_requests_count,
+          current: currentCount,
         },
         { status: 429 }
       );
     }
+
+    // ATOMIC INCREMENT: Increment counter BEFORE making API call to prevent race condition
+    // Use PostgreSQL's atomic increment to ensure only one request can increment at a time
+    const { data: updatedProfile, error: incrementError } = await supabase.rpc(
+      'increment_ai_requests',
+      { user_id: user.id, max_limit: userLimit }
+    );
+
+    if (incrementError || !updatedProfile) {
+      // If increment fails or limit exceeded, return error
+      if (incrementError?.message?.includes('limit')) {
+        return NextResponse.json(
+          {
+            error: `AI request limit reached. Upgrade to Pro for unlimited AI coaching!`,
+            limit: userLimit,
+            current: currentCount,
+          },
+          { status: 429 }
+        );
+      }
+      console.error("Increment error:", incrementError);
+      return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
+    }
+
+    const newCount = updatedProfile;
 
     const body = await request.json();
     const { task, type, history } = body;
@@ -113,18 +148,12 @@ export async function POST(request: NextRequest) {
 
     const response = completion.choices[0]?.message?.content || "";
 
-    // Increment usage counter
-    await supabase
-      .from("users")
-      .update({
-        ai_requests_count: profile.ai_requests_count + 1,
-      })
-      .eq("id", user.id);
+    // Counter already incremented atomically before API call - no race condition possible
 
     return NextResponse.json({
       response,
       usage: {
-        current: profile.ai_requests_count + 1,
+        current: newCount,
         limit: userLimit === Infinity ? "unlimited" : userLimit,
         tier: profile.subscription_tier,
       },

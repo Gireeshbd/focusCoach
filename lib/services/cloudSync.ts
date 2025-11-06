@@ -1,6 +1,7 @@
 import { getSupabaseClient } from '../supabase/client'
 import type { Database } from '../supabase/database.types'
 import type { Task, Column, FocusSession, DopamineStats } from '../types'
+import { toISOString, toDateOnly, ensureValidTimestamp } from '../utils/dateUtils'
 
 type DbTask = Database['public']['Tables']['tasks']['Row']
 type DbColumn = Database['public']['Tables']['columns']['Row']
@@ -40,14 +41,17 @@ export class CloudSyncService {
         workspace_id: workspace.id,
         title: col.title,
         position: col.position,
-        created_at: col.createdAt,
+        created_at: ensureValidTimestamp(col.createdAt), // Safe timestamp conversion
       }))
 
       const { error: columnsError } = await this.supabase
         .from('columns')
         .upsert(columnsToInsert, { onConflict: 'id' })
 
-      if (columnsError) throw columnsError
+      if (columnsError) {
+        console.error('Columns migration error:', columnsError)
+        throw columnsError
+      }
 
       // Migrate tasks
       const tasksToInsert = localData.tasks.map(task => ({
@@ -59,8 +63,8 @@ export class CloudSyncService {
         description: task.description || null,
         notes: task.notes || null,
         position: task.position,
-        created_at: task.createdAt,
-        updated_at: task.updatedAt,
+        created_at: ensureValidTimestamp(task.createdAt), // Safe timestamp conversion
+        updated_at: ensureValidTimestamp(task.updatedAt), // Safe timestamp conversion
       }))
 
       const { error: tasksError } = await this.supabase
@@ -82,8 +86,8 @@ export class CloudSyncService {
           id: session.id,
           user_id: userId,
           task_id: session.taskId,
-          start_time: session.startTime,
-          end_time: session.endTime || null,
+          start_time: ensureValidTimestamp(session.startTime), // Safe timestamp conversion
+          end_time: toISOString(session.endTime), // Can be null, handles properly
           duration: session.duration,
           target_duration: session.targetDuration,
           focus_quality: session.focusQuality || null,
@@ -96,7 +100,10 @@ export class CloudSyncService {
           .from('focus_sessions')
           .upsert(sessionsToInsert, { onConflict: 'id' })
 
-        if (sessionsError) throw sessionsError
+        if (sessionsError) {
+          console.error('Sessions migration error:', sessionsError)
+          throw sessionsError
+        }
       }
 
       // Update stats (stats are auto-created on user signup, so we just update)
@@ -108,13 +115,16 @@ export class CloudSyncService {
             total_distraction_time: localData.stats.totalDistractionTime,
             current_streak: localData.stats.currentStreak,
             longest_streak: localData.stats.longestStreak,
-            last_session_date: localData.stats.lastSessionDate || null,
+            last_session_date: toDateOnly(localData.stats.lastSessionDate), // Convert to date-only format
             sessions_completed: localData.stats.sessionsCompleted,
             average_focus_quality: localData.stats.averageFocusQuality,
           })
           .eq('user_id', userId)
 
-        if (statsError) throw statsError
+        if (statsError) {
+          console.error('Stats migration error:', statsError)
+          throw statsError
+        }
       }
 
       console.log('✅ Local data migrated to cloud successfully')

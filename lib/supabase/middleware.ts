@@ -48,7 +48,29 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirectTo', request.nextUrl.pathname)
-    return NextResponse.redirect(url)
+
+    // CRITICAL: Preserve cookies when redirecting to prevent auth token loss
+    const redirectResponse = NextResponse.redirect(url)
+
+    // Copy all cookies from supabaseResponse to preserve auth state
+    const cookies = supabaseResponse.cookies.getAll()
+    cookies.forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    })
+
+    return redirectResponse
+  }
+
+  // Protected routes with analytics
+  const analyticsRoutes = ['/analytics']
+  const isAnalyticsRoute = analyticsRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // Check Pro/Elite subscription for analytics
+  if (isAnalyticsRoute && user) {
+    // Note: subscription check should be done in the page component
+    // as we don't have access to full user profile in middleware
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
