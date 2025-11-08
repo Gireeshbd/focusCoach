@@ -1,19 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { apiKey, task, type, history } = body;
+    // Authenticate user
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!apiKey) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get user profile with subscription info
+    const { data: profile, error: profileError } = await supabase
+      .from("users")
+      .select("subscription_tier, ai_requests_count, ai_requests_reset_at")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error("Profile fetch error:", profileError);
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+    }
+
+    // Check if AI requests need to be reset (monthly)
+    const resetDate = new Date(profile.ai_requests_reset_at);
+    const now = new Date();
+    const shouldReset = now.getMonth() !== resetDate.getMonth() || now.getFullYear() !== resetDate.getFullYear();
+
+    let currentCount = profile.ai_requests_count;
+
+    if (shouldReset) {
+      const { error: resetError } = await supabase
+        .from("users")
+        .update({
+          ai_requests_count: 0,
+          ai_requests_reset_at: now.toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (resetError) {
+        console.error("Reset error:", resetError);
+      } else {
+        currentCount = 0;
+      }
+    }
+
+    // Rate limiting based on tier
+    const limits = {
+      free: 5,
+      pro: Infinity,
+      elite: Infinity,
+    };
+
+    const userLimit = limits[profile.subscription_tier];
+
+    // Check limit BEFORE incrementing
+    if (currentCount >= userLimit) {
       return NextResponse.json(
-        { error: "OpenAI API key is required" },
-        { status: 400 }
+        {
+          error: `AI request limit reached. Upgrade to Pro for unlimited AI coaching!`,
+          limit: userLimit,
+          current: currentCount,
+        },
+        { status: 429 }
       );
     }
 
-    const openai = new OpenAI({ apiKey });
+    // ATOMIC INCREMENT: Increment counter BEFORE making API call to prevent race condition
+    // Use PostgreSQL's atomic increment to ensure only one request can increment at a time
+    const { data: updatedProfile, error: incrementError } = await supabase.rpc(
+      'increment_ai_requests',
+      { user_id: user.id, max_limit: userLimit }
+    );
+
+    if (incrementError || !updatedProfile) {
+      // If increment fails or limit exceeded, return error
+      if (incrementError?.message?.includes('limit')) {
+        return NextResponse.json(
+          {
+            error: `AI request limit reached. Upgrade to Pro for unlimited AI coaching!`,
+            limit: userLimit,
+            current: currentCount,
+          },
+          { status: 429 }
+        );
+      }
+      console.error("Increment error:", incrementError);
+      return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
+    }
+
+    const newCount = updatedProfile;
+
+    const body = await request.json();
+    const { task, type, history } = body;
+
+    // Use server-side API key (included in subscription)
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     let systemPrompt = "";
     let userPrompt = "";
@@ -58,7 +148,16 @@ export async function POST(request: NextRequest) {
 
     const response = completion.choices[0]?.message?.content || "";
 
-    return NextResponse.json({ response });
+    // Counter already incremented atomically before API call - no race condition possible
+
+    return NextResponse.json({
+      response,
+      usage: {
+        current: newCount,
+        limit: userLimit === Infinity ? "unlimited" : userLimit,
+        tier: profile.subscription_tier,
+      },
+    });
   } catch (error: any) {
     console.error("OpenAI API Error:", error);
     return NextResponse.json(
