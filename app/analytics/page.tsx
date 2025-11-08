@@ -312,7 +312,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             {heatmap.length > 0 ? (
-              <div className="grid grid-cols-8 gap-2">
+              <div className="grid grid-cols-9 gap-2">
                 <div></div>
                 {Array.from({ length: 24 }, (_, i) => i).filter(h => h % 3 === 0).map(hour => (
                   <div key={hour} className="text-xs text-center text-muted-foreground">
