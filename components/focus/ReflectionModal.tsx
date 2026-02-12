@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ReflectionModalProps {
@@ -71,7 +71,7 @@ export default function ReflectionModal({
                 </div>
                 <p className="text-base text-muted-foreground font-medium relative">
                   You focused for <span className="font-bold text-success text-lg">{durationMinutes} minutes</span>.
-                  Let's reflect on your session.
+                  Let&apos;s reflect on your session.
                 </p>
               </div>
 
@@ -153,7 +153,7 @@ export default function ReflectionModal({
                     htmlFor="whatsNext"
                     className="block text-xl font-bold mb-4 text-card-foreground"
                   >
-                    What's next?
+                    What&apos;s next?
                   </label>
                   <textarea
                     id="whatsNext"
