@@ -78,7 +78,7 @@ export default function TaskCard({ task, onEdit, onDelete, isDragging = false }:
       transition={{ duration: 0.15 }}
       className={isDragging ? "cursor-grabbing" : "cursor-grab"}
     >
-      <Card className="group gap-0 rounded-lg border shadow-sm transition-shadow hover:shadow-md">
+      <Card className="group relative gap-0 rounded-lg border shadow-sm transition-shadow hover:shadow-md">
         <div className="absolute right-2 top-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -106,14 +106,14 @@ export default function TaskCard({ task, onEdit, onDelete, isDragging = false }:
             <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">{task.description}</p>
           )}
 
-          <div className="mt-3 flex items-center gap-2">
-            {completedSessions.length > 0 && (
+          {completedSessions.length > 0 && (
+            <div className="mt-3 flex items-center gap-2">
               <Badge variant="secondary" className="text-[11px]">
                 <Target className="mr-1 h-3 w-3" />
-                {completedSessions.length} sessions
+                {completedSessions.length} {completedSessions.length === 1 ? "session" : "sessions"}
               </Badge>
-            )}
-          </div>
+            </div>
+          )}
 
           <Button variant={showAIPanel ? "default" : "outline"} size="sm" className="mt-3 w-full" onClick={handleAICoach} disabled={loadingAI}>
             {loadingAI ? (

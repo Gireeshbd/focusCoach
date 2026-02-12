@@ -24,23 +24,25 @@ export default function FlowTimer({ targetDuration, onComplete, onStop }: FlowTi
     }
 
     intervalRef.current = setInterval(() => {
-      setElapsed((prev) => {
-        const next = prev + 100;
-        if (next >= targetDuration) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          setIsRunning(false);
-          setIsPaused(false);
-          onComplete(targetDuration);
-          return targetDuration;
-        }
-        return next;
-      });
+      setElapsed((prev) => Math.min(prev + 100, targetDuration));
     }, 100);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRunning, isPaused, onComplete, targetDuration]);
+  }, [isRunning, isPaused, targetDuration]);
+
+  useEffect(() => {
+    if (elapsed < targetDuration) return;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsRunning(false);
+    setIsPaused(false);
+    onComplete(targetDuration);
+  }, [elapsed, targetDuration, onComplete]);
 
   const handleStart = () => {
     setIsRunning(true);

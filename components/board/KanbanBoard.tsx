@@ -121,14 +121,28 @@ export default function KanbanBoard() {
 
     if (overColumn) {
       newColumnId = overColumn.id;
-      newPosition = tasks.filter((t) => t.columnId === newColumnId).length;
+      const columnTasks = tasks.filter((t) => t.columnId === newColumnId && t.id !== taskId);
+      newPosition = columnTasks.length;
     } else if (overTask) {
       newColumnId = overTask.columnId;
+      // Consistent behavior: insert before hovered task
       newPosition = overTask.position;
     }
 
     if (newColumnId !== task.columnId || newPosition !== task.position) {
       updateTask(taskId, { columnId: newColumnId, position: newPosition });
+
+      const latestTasks = getTasks();
+      const targetColumnTasks = latestTasks
+        .filter((t) => t.columnId === newColumnId)
+        .sort((a, b) => a.position - b.position);
+
+      targetColumnTasks.forEach((columnTask, index) => {
+        if (columnTask.position !== index) {
+          updateTask(columnTask.id, { position: index });
+        }
+      });
+
       setTasks(getTasks());
     }
   };

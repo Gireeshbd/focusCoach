@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import { getTask, getSettings, addSession } from "@/lib/localStorage";
@@ -12,15 +12,27 @@ export default function FocusModePage() {
   const router = useRouter();
   const taskId = params.id as string;
 
-  const task = useMemo(() => getTask(taskId), [taskId]);
-  const [targetDuration] = useState(() => getSettings().defaultFocusTime * 60 * 1000);
-  const [sessionStartTime] = useState(() => Date.now());
+  const [task, setTask] = useState<ReturnType<typeof getTask>>(null);
+  const [targetDuration, setTargetDuration] = useState(90 * 60 * 1000);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [showReflection, setShowReflection] = useState(false);
   const [sessionDuration, setSessionDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!task) router.push("/");
-  }, [task, router]);
+    const loadedTask = getTask(taskId);
+    const settings = getSettings();
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTask(loadedTask);
+    setTargetDuration(settings.defaultFocusTime * 60 * 1000);
+    setSessionStartTime(Date.now());
+    setIsLoading(false);
+  }, [taskId]);
+
+  useEffect(() => {
+    if (!isLoading && !task) router.push("/");
+  }, [isLoading, task, router]);
 
   const handleComplete = (duration: number) => {
     setSessionDuration(duration);
@@ -35,7 +47,7 @@ export default function FocusModePage() {
   }) => {
     addSession({
       taskId,
-      startTime: sessionStartTime,
+      startTime: sessionStartTime ?? Date.now(),
       endTime: Date.now(),
       duration: sessionDuration,
       targetDuration,
@@ -54,7 +66,13 @@ export default function FocusModePage() {
     }
   };
 
-  if (!task) return null;
+  if (isLoading || !task || sessionStartTime === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-background">

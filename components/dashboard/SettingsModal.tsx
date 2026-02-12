@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { getSettings, updateSettings } from "@/lib/localStorage";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,13 +13,19 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
-const initialSettings = getSettings();
-
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const [apiKey, setApiKey] = useState(initialSettings.openAIApiKey || "");
-  const [defaultFocusTime, setDefaultFocusTime] = useState(initialSettings.defaultFocusTime);
+  const [apiKey, setApiKey] = useState(() => getSettings().openAIApiKey || "");
+  const [defaultFocusTime, setDefaultFocusTime] = useState(() => getSettings().defaultFocusTime);
   const [showApiKey, setShowApiKey] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const settings = getSettings();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setApiKey(settings.openAIApiKey || "");
+    setDefaultFocusTime(settings.defaultFocusTime);
+  }, [isOpen]);
 
   const handleSave = () => {
     updateSettings({

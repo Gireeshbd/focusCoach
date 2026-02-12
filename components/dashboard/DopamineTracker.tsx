@@ -1,11 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Flame, Target, Clock, TrendingUp } from "lucide-react";
 import { getStats } from "@/lib/localStorage";
+import { DEFAULT_STATS } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function DopamineTracker() {
-  const stats = getStats();
+  const [stats, setStats] = useState(DEFAULT_STATS);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStats(getStats());
+  }, []);
 
   const totalHours = Math.floor(stats.totalFocusTime / (1000 * 60 * 60));
   const totalMinutes = Math.floor((stats.totalFocusTime % (1000 * 60 * 60)) / (1000 * 60));
