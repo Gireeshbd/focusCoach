@@ -59,10 +59,11 @@ export async function POST(request: NextRequest) {
     const response = completion.choices[0]?.message?.content || "";
 
     return NextResponse.json({ response });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("OpenAI API Error:", error);
+    const message = error instanceof Error ? error.message : "Failed to generate AI response";
     return NextResponse.json(
-      { error: error.message || "Failed to generate AI response" },
+      { error: message },
       { status: 500 }
     );
   }

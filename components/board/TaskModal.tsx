@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,95 +14,54 @@ interface TaskModalProps {
   initialData?: { title: string; description: string; notes: string };
 }
 
-export default function TaskModal({
-  isOpen,
-  onClose,
-  onSave,
-  initialData,
-}: TaskModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [notes, setNotes] = useState("");
+export default function TaskModal({ isOpen, onClose, onSave, initialData }: TaskModalProps) {
+  const formKey = useMemo(
+    () => `${isOpen}-${initialData?.title ?? "new"}-${initialData?.description ?? ""}`,
+    [isOpen, initialData?.title, initialData?.description]
+  );
 
-  useEffect(() => {
-    if (isOpen && initialData) {
-      setTitle(initialData.title);
-      setDescription(initialData.description);
-      setNotes(initialData.notes);
-    } else if (isOpen) {
-      setTitle("");
-      setDescription("");
-      setNotes("");
-    }
-  }, [isOpen, initialData]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    const formData = new FormData(e.currentTarget);
+    const title = String(formData.get("title") || "").trim();
+    const description = String(formData.get("description") || "").trim();
+    const notes = String(formData.get("notes") || "").trim();
 
-    onSave({
-      title: title.trim(),
-      description: description.trim(),
-      notes: notes.trim(),
-    });
+    if (!title) return;
+    onSave({ title, description, notes });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>{initialData ? "Edit Task" : "Create New Task"}</DialogTitle>
+          <DialogTitle>{initialData ? "Edit Task" : "Create Task"}</DialogTitle>
           <DialogDescription>
-            {initialData
-              ? "Make changes to your task here."
-              : "Add a new task to your board."}
+            {initialData ? "Update task details." : "Add a new task to your board."}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form key={formKey} onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter task title..."
-                required
-                autoFocus
-              />
+              <Input id="title" name="title" defaultValue={initialData?.title ?? ""} placeholder="Enter task title..." required autoFocus />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="What needs to be done?"
-                rows={3}
-              />
+              <Textarea id="description" name="description" defaultValue={initialData?.description ?? ""} placeholder="What needs to be done?" rows={3} />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Additional notes, ideas, or context..."
-                rows={4}
-              />
+              <Textarea id="notes" name="notes" defaultValue={initialData?.notes ?? ""} placeholder="Additional context..." rows={4} />
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!title.trim()}>
-              {initialData ? "Save Changes" : "Create Task"}
-            </Button>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit">{initialData ? "Save" : "Create"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

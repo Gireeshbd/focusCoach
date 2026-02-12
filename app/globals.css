@@ -4,55 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* FlowBoard Design System - Clean & Professional */
-
-  /* Primary - Calm Blue */
-  --primary: #3b82f6;
+  --primary: #111827;
   --primary-foreground: #ffffff;
 
-  /* Secondary - Clean Gray */
-  --secondary: #64748b;
-  --secondary-foreground: #ffffff;
+  --secondary: #e5e7eb;
+  --secondary-foreground: #111827;
 
-  /* Accent - Success Green */
-  --accent: #10b981;
+  --accent: #2563eb;
   --accent-foreground: #ffffff;
 
-  /* Background & Surfaces */
-  --background: #f8f9fa;
-  --foreground: #1e293b;
+  --background: #f6f7f9;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #1e293b;
+  --card-foreground: #111827;
 
-  /* Borders - Subtle */
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #3b82f6;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #2563eb;
 
-  /* Muted */
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
 
-  /* Destructive */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  /* Warning */
   --warning: #f59e0b;
   --warning-foreground: #ffffff;
 
-  /* Radius - Clean & Consistent */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius: 8px;
-
-  /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #1e293b;
+  --popover-foreground: #111827;
 
-  /* Charts */
+  --radius: 10px;
+
   --chart-1: #3b82f6;
   --chart-2: #10b981;
   --chart-3: #f59e0b;
@@ -63,46 +46,28 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -112,45 +77,43 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+  background: radial-gradient(1200px 500px at 50% -120px, #eef2ff 0%, transparent 60%), var(--background);
 }
 
 .dark {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-  --card: #1e293b;
-  --card-foreground: #f1f5f9;
-  --popover: #1e293b;
-  --popover-foreground: #f1f5f9;
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --card: #111827;
+  --card-foreground: #e2e8f0;
+  --popover: #111827;
+  --popover-foreground: #e2e8f0;
 
-  --primary: #60a5fa;
-  --primary-foreground: #ffffff;
-  --secondary: #94a3b8;
-  --secondary-foreground: #ffffff;
-  --accent: #34d399;
-  --accent-foreground: #ffffff;
+  --primary: #f8fafc;
+  --primary-foreground: #0b1220;
+  --secondary: #1f2937;
+  --secondary-foreground: #e2e8f0;
+  --accent: #60a5fa;
+  --accent-foreground: #0b1220;
 
-  --muted: #334155;
-  --muted-foreground: #cbd5e1;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   --destructive: #f87171;
-  --border: #334155;
-  --input: #334155;
+  --border: #1f2937;
+  --input: #1f2937;
   --ring: #60a5fa;
 }
 
